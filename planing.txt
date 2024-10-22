@@ -1,0 +1,54 @@
+VOTING APPLICATION
+
+WHAT?
+a app where user has right give votes to the candidates elected, voting party
+
+Models?
+Routes?
+
+voting app functionality:
+
+user signin/signup, use unique citizenship number to signup
+view candidates/parties list
+vote candidates eligible user can only
+1 user 1 vote
+route for candidates list show and live vote count for each descending order by count, anyone can see
+admin portal also for maintaining application data, admin can't vote
+user can password change.
+
+-----------------------------------------------------------------------------------------
+
+
+Routes:
+
+admin:
+/candidates: POST, create new candidates
+/candidates/:candidateID: PUT, edit candidates details
+/candidates/:candidateID: DELETE, delete candidate details
+
+user authentication:
+/signup: POST, create user
+/login: POST, login user
+
+voting:
+/candidates: GET, candidates list view
+/vote/:candidates: POST, give vote to candidates
+
+vote counts:
+/vote/counts: GET, view live vote counts they got of every candidates
+
+user profile:
+/profile: GET, view user profile, edit personal information
+/profile/password: PUT, edit/change user password
+
+
+------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
