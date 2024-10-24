@@ -1,27 +1,42 @@
 const mongoose = require('mongoose');
 
+//json data 
+[
+    {
+        "name": "Suman Thapa",
+        "age": 20,
+        "mobile": "9832451230",
+        "email": "abcd@gmail.com",
+        "address": "Pokhara-17, Birauta",
+        "citizenshipNumber": 120210921,
+        "password": "abcd"
+    }
+]
+
+
+
 // Define the User schema
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    age:{
+    age: {
         type: Number
     },
-    mobile:{
+    mobile: {
         type: String,
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true,
         unique: true
     },
-    address:{
+    address: {
         type: String
     },
-    citizenshipNumber:{
+    citizenshipNumber: {
         type: String,
         required: true,
         unique: true
@@ -32,27 +47,27 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['voter','admin'],
+        enum: ['voter', 'admin'],
         default: 'voter'
     },
     hasVoted: {
-        type:Boolean,
+        type: Boolean,
         default: false
     }
 });
 
-userSchema.methods.comparePassword = async function(candidatePassword){
-    try{
-        if (candidatePassword === this.password){
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    try {
+        if (candidatePassword === this.password) {
             return true;
         }
         return false;
 
-    }catch(err){
+    } catch (err) {
         throw err;
     }
 }
 
 
-const User = mongoose.model('User',userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;
