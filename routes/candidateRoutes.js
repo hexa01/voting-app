@@ -40,7 +40,7 @@ router.post('/', jwtAuthMiddleware, async (req, res) => {
 })
 
 //update Candidate data
-router.put('/:candidateID',jwtAuthMiddleware, async (req, res) => {
+router.put('/:candidateID', jwtAuthMiddleware, async (req, res) => {
     try {
         if (!isAdmin(req.user.id))
             return res.status(403).json({ message: 'User has no admin role.' })
@@ -63,22 +63,98 @@ router.put('/:candidateID',jwtAuthMiddleware, async (req, res) => {
 })
 
 //delete Candidate data
-router.delete('/:candidateID',jwtAuthMiddleware, async (req, res) => {
+router.delete('/:candidateID', jwtAuthMiddleware, async (req, res) => {
     try {
         if (!isAdmin(req.user.id))
             return res.status(403).json({ message: 'User has no admin role.' })
 
-        const candidateId = req.params.candidateID; // Extract the id from the req.params
-        const response = await User.findByIdAndDelete(candidateID)
-
+        const candidateID = req.params.candidateID; // Extract the id from the req.params
+        console.log(candidateID)
+        const response = await Candidate.findByIdAndDelete(candidateID)
+        console.log(response)
         if (!response) {
             return res.status(404).json({ error: 'Candidate not found' });
         }
-        
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
+
+router.post('/vote:candidateID', jwtAuthMiddleware, async (req, res) => {
+    candidateID = req.params.candidateID;
+    userID = req.user.id;
+
+    try {
+        //find candidate from candidate ID
+        const candidate = await Candidate.findById(candidateID);
+        if (!candidate) {
+            return res.status(404).json({ message: 'Candidate not found' });
+        }
+        //find user from user ID
+        const user = await User.findById(candidateID);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        //check whether user has already voted
+        if (user.hasVoted) {
+            return res.status(400).json({ message: 'You have already voted.' });
+        }
+
+        //check if user is admin or not
+        if (user.role === 'admin') {
+            return res.status(403).json({ message: 'You are a admin, and cant vote' });
+        }
+
+        //user has not voted and eligible to vote, voting logic
+
+        //update candidate vote count 
+        candidate.votes.push({ user: userID });
+        candidate.voteCount++;
+        await candidate.save()
+
+        //update user.hasVoted to true
+        user.hasVoted = true;
+        await user.save()
+
+        console.log('You have successfully voted.');
+        res.status(200).json({ message: 'You have successfully voted.' });
+
+    }
+
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    //total vote counts get of candidate and arrange in descending order
+    router.get('vote/count/', jwtAuthMiddleware, async (req, res) => {
+        try {
+            //find all candidates data in descending order by voteCount
+            const candidates = await Candidate.find().sort({ voteCount: 'desc' });
+
+            //map the candidates to only return candiate name, party and voteCount
+            const voteData = candidates.map((data) => {
+                return {
+                    name: data.name,
+                    party: data.party,
+                    count: data.voteCount
+                }
+
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Internal server error' });
+
+        }
+
+
+    })
+
+})
+
 
 module.exports = router;
