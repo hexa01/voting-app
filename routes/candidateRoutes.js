@@ -128,9 +128,10 @@ router.post('/vote:candidateID', jwtAuthMiddleware, async (req, res) => {
         console.log(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+})
 
     //total vote counts get of candidate and arrange in descending order
-    router.get('vote/count/', jwtAuthMiddleware, async (req, res) => {
+    router.get('/votes', async (req, res) => {
         try {
             //find all candidates data in descending order by voteCount
             const candidates = await Candidate.find().sort({ voteCount: 'desc' });
@@ -138,12 +139,12 @@ router.post('/vote:candidateID', jwtAuthMiddleware, async (req, res) => {
             //map the candidates to only return candiate name, party and voteCount
             const voteData = candidates.map((data) => {
                 return {
-                    name: data.name,
                     party: data.party,
                     count: data.voteCount
                 }
 
             });
+            return res.status(200).json(voteData);
 
         } catch (error) {
             console.log(error);
@@ -153,8 +154,6 @@ router.post('/vote:candidateID', jwtAuthMiddleware, async (req, res) => {
 
 
     })
-
-})
 
 
 module.exports = router;
