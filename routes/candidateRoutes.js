@@ -93,7 +93,7 @@ router.post('/vote/:candidateID', jwtAuthMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'Candidate not found' });
         }
         //find user from user ID
-        const user = await User.findById(candidateID);
+        const user = await User.findById(userID);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
