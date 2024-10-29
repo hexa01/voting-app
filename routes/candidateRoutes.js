@@ -139,6 +139,7 @@ router.post('/vote/:candidateID', jwtAuthMiddleware, async (req, res) => {
             //map the candidates to only return candiate name, party and voteCount
             const voteData = candidates.map((data) => {
                 return {
+                    name: data.name,
                     party: data.party,
                     count: data.voteCount
                 }
@@ -151,8 +152,22 @@ router.post('/vote/:candidateID', jwtAuthMiddleware, async (req, res) => {
             res.status(500).json({ error: 'Internal server error' });
 
         }
+    })
 
-
+    router.get('/', async(req,res)=>{
+        try {
+            const candidates = Candidate.find()
+            const candidateNames = (await candidates).map((data)=>{
+                return {
+                    name: data.name,
+                    party: data.party
+                }
+            })
+            return res.status(200).json(candidateNames);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
     })
 
 
